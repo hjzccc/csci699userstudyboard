@@ -4,7 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 export async function GET(request: NextRequest) {
   const data = await kv.get<[]>("evaluationDataSet");
-  const numbers = Array.from({ length: 90 }, (_, i) => i + 1);
+  const length = data?.length ? data.length - 1 : 0;
+  const numbers = Array.from({ length: length }, (_, i) => i + 1);
   for (let i = numbers.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [numbers[i], numbers[j]] = [numbers[j], numbers[i]];

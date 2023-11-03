@@ -6,4 +6,9 @@ const users = createClient({
   token: process.env.KV_REST_API_TOKEN,
 });
 
-const user = await users.hset("volunteers", { 1001: {} });
+const user = await users.hset("volunteers", {
+  1001: {},
+  1002: {},
+  1003: {},
+  1004: {},
+});

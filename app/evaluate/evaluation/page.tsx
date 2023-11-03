@@ -67,7 +67,7 @@ function EvaluationPage({
               } catch {}
             }}
           >
-            Proceed Evaluation
+            Submit
           </button>
         </div>
         <Question
