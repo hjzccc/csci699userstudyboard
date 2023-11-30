@@ -2,20 +2,24 @@ import Link from "next/link";
 import React from "react";
 
 function Page() {
+  const insturctions = `
+  Thank you for taking this user study! 
+
+  There are a total of 3 question sets in this study, and each will have questions evaluating three aspects of the code.
+  Three Objectives:
+  1.Assess the readability of the decompiled code
+  2.Whether the process preserves the functionality of the code 
+  3.Obtain human judgment on the model generated summary
+
+  `;
   return (
     <main className="min-h-screen p-24 flex-col flex justify-center items-center">
       <div className="  h-max border-4 border-gray-200 max-w-screen-lg rounded-3xl bg-slate-300 p-6">
         <div className=" block">
           <h1>Evaluation Instruction:</h1>
-          <p className="mt-2">
-            Thank you very much for taking this user study! In the next 10
-            questions, we want you to help us evaluate the quality of
-            decompilation code, for each question please help us evaluate the
-            quality of the decompilation code by choosing a score from 1 to 5,
-            where 1 means the code is very bad and 5 means the code is very
-            good. In the following we provide some examples to help you
-            understand the meaning of each score.
-          </p>
+          <pre className="mt-2 break-word whitespace-pre-line">
+            {insturctions}
+          </pre>
         </div>
       </div>
       <Link

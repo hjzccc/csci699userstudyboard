@@ -30,7 +30,7 @@ export default function Home() {
           if (!response.ok) {
             alert("wrong id");
           } else {
-            router.push("/evaluate/examples");
+            router.push("/evaluate");
           }
         }}
       >

@@ -1,78 +1,137 @@
-import React, { useState } from "react";
-import { CodeBlock, dracula } from "react-code-blocks";
+import React, { useEffect, useRef, useState } from "react";
+import { dracula } from "react-code-blocks";
 import scoreHint from "@/utils/scoreHint";
+import CodeBlock from "./codeblock";
 type Props = {
-  codeLeft?: string;
-  codeRight?: string;
   showRateButton?: boolean;
-  onRateChange?: (index: number, score: number) => void;
+  onChange?: (values: any) => void;
   initialHint?: string;
   index?: number;
-  initialScore?: number;
+  codeSamples: {
+    title: string;
+    content: string;
+  }[];
+  sourceCode?: string;
+  tourOpen?: boolean;
 };
+import hljs from "highlight.js";
+import { Card, Form, Select, Tabs, Tour, TourProps } from "antd";
+import { useForm } from "antd/es/form/Form";
 function Question({
-  codeLeft = "",
-  codeRight = "",
+  sourceCode = "",
+  codeSamples = [],
   showRateButton = true,
-  onRateChange = () => {},
+  onChange = () => {},
   initialHint = "",
   index = -1,
-  initialScore = 0,
+  tourOpen = false,
 }: Props) {
-  const currentHint = scoreHint[initialScore] || initialHint;
-
+  const currentHint = initialHint;
+  const [form] = Form.useForm();
+  const [tourPerformed, setTourPerformed] = useState(false);
+  const codeOptions = codeSamples.map((value, index) => ({
+    label: value.title,
+    value: value.title,
+  }));
+  const pageAreaRef = useRef(null);
+  const codeTabRef = useRef(null);
+  const rankAreaRef = useRef(null);
+  const rankSelectRef = useRef(null);
+  const steps: TourProps["steps"] = [
+    {
+      title: "Readability Rank",
+      description: "You will rank the readability of the code samples",
+      target: () => pageAreaRef.current,
+    },
+    {
+      title: "Switch between code samples",
+      description:
+        "You can switch between code samples to help you compare with different versions",
+      target: () => codeTabRef.current,
+    },
+    {
+      title: "Rank the readability",
+      description:
+        "Rank the readability of the code samples, from best to worst",
+      target: () => rankAreaRef.current,
+    },
+  ];
   return (
-    <main className="py-10 flex-col flex justify-center items-center flex-1">
-      <div className="flex gap-10 w-full justify-center items-center ">
-        <CodeBlock
-          customStyle={{
-            minWidth: "40%",
-            maxWidth: "40%",
-            height: "70vh",
-            overflow: "auto",
-            display: "inline-block",
-          }}
-          text={codeLeft}
-          language={"cpp"}
-          showLineNumbers={true}
-          theme={dracula}
-        />
-        \
-        <CodeBlock
-          customStyle={{
-            minWidth: "40%",
-            maxWidth: "40%",
-            height: "70vh",
-            overflow: "auto",
-          }}
-          text={codeRight}
-          language={"cpp"}
-          showLineNumbers={true}
-          theme={dracula}
-        />
-      </div>
-      <div className=" mt-10 w-[90%] h-max border-4 border-gray-200  rounded-3xl bg-slate-300 p-6">
-        <p>{currentHint}</p>
-      </div>
-      {showRateButton && (
-        <div className="mt-5">
-          {Array.from({ length: 5 }, (_, i) => i + 1).map((i) => (
-            <button
-              key={i}
-              onClick={() => {
-                onRateChange(index, i);
-              }}
-              className={`${
-                initialScore == i &&
-                "ring-blue-300 ring-4 outline-none dark:ring-blue-800 "
-              } rounded-full w-20 h-20 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium  p-2.5 mr-24 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800`}
-            >
-              {i}
-            </button>
-          ))}
+    <div
+      className="flex-col flex justify-start gap-2 items-center flex-1"
+      ref={pageAreaRef}
+    >
+      <Tour
+        steps={steps}
+        open={!tourPerformed && tourOpen}
+        onClose={() => setTourPerformed(true)}
+      ></Tour>
+      <div className="flex w-full gap-5 justify-center" ref={codeTabRef}>
+        <div className="w-[49%]">
+          <Tabs
+            className="h-full "
+            defaultActiveKey="1"
+            centered
+            items={[...codeSamples].map((value, i) => {
+              return {
+                label: value.title,
+                key: `${i}`,
+                children: (
+                  <CodeBlock
+                    className="overflow-auto h-[60vh]"
+                    codeText={value.content}
+                  ></CodeBlock>
+                ),
+              };
+            })}
+          />
         </div>
-      )}
-    </main>
+        <div className="w-[49%]">
+          <Tabs
+            defaultActiveKey="1"
+            centered
+            items={[...codeSamples].map((value, i) => {
+              return {
+                label: value.title,
+                key: `${i}`,
+                children: (
+                  <CodeBlock
+                    className="overflow-auto h-[60vh]"
+                    codeText={value.content}
+                  ></CodeBlock>
+                ),
+              };
+            })}
+          />
+        </div>
+      </div>
+      <Card className="w-[99%]  break-words text-white">
+        <p>{currentHint}</p>
+      </Card>
+      <div className=" self-start ml-3">
+        <Form
+          form={form}
+          onValuesChange={(_, values) => {
+            console.log(values);
+            onChange(values);
+          }}
+        >
+          <div className="flex gap-1" ref={rankAreaRef}>
+            <label className="pt-1.5">
+              rank from the best to worst readability:{" "}
+            </label>
+            {codeOptions.map((value, index) => (
+              <Form.Item key={index} name={["ranks", `rank${index}`]}>
+                <Select
+                  options={codeOptions}
+                  defaultValue={codeOptions[0]}
+                ></Select>
+              </Form.Item>
+            ))}
+          </div>
+        </Form>
+      </div>
+    </div>
   );
 }
 

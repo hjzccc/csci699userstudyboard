@@ -2,8 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  margin: 0;
+  padding: 0;
+}
 :root {
-  @apply bg-gradient-to-r from-cyan-500 to-blue-500
+  @apply bg-gray-900
 }
 
 

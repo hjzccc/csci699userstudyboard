@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { kv } from "@vercel/kv";
 import { NextRequest, NextResponse } from "next/server";

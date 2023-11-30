@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { kv } from "@vercel/kv";
 import { NextRequest, NextResponse } from "next/server";
@@ -7,7 +8,7 @@ export async function GET(request: NextRequest) {
   const length = data?.length ? data.length - 1 : 0;
   const numbers = Array.from({ length: length }, (_, i) => i + 1);
   for (let i = numbers.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(Math.random() * (numbers.length - 1));
     [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
   }
   if (!data) {
