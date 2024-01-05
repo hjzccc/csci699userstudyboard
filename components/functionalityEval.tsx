@@ -1,7 +1,7 @@
 import { Card, Tour, TourProps } from "antd";
 import React, { useRef, useState } from "react";
 import CodeBlock from "./codeblock";
-import { Problem } from "@/types";
+import { EvaluateResult, Problem } from "@/types";
 
 const problems: Problem[] = [
   {
@@ -60,11 +60,11 @@ bool has_close_elements(const std::vector<float>& vec, float threshold) {
 function SingletonQuestion({
   problem,
   onSelect,
-  chosen = "0",
+  chosen = -1,
 }: {
   problem: Problem;
-  onSelect: (optionMark: string) => void;
-  chosen?: string;
+  onSelect: (optionMark: number) => void;
+  chosen?: number;
 }) {
   const c = "A";
   return (
@@ -76,10 +76,10 @@ function SingletonQuestion({
           <div
             key={index}
             onClick={() => {
-              onSelect(optionMark);
+              onSelect(index);
             }}
             className={`border-2 border-gray-500 p-2 rounded-full  max-w-fit mt-3 cursor-pointer hover:bg-gray-500 ${
-              chosen === optionMark ? "bg-gray-500" : ""
+              chosen === index ? "bg-gray-500" : ""
             }`}
           >
             {`${optionMark}.${value}`}
@@ -93,11 +93,15 @@ type Props = {
   codeText: string;
   problems: Problem[];
   tourOpen: boolean;
+  onChange?: (title: string, choice: number) => void;
+  choices?: { title: string; choice: number }[];
 };
 function FunctionalityEval({
   codeText = "",
   problems = [],
   tourOpen = false,
+  onChange = () => {},
+  choices = [],
 }: Props) {
   const [tourPerformed, setTourPerformed] = React.useState(false);
   const pageRef = useRef(null);
@@ -111,7 +115,6 @@ function FunctionalityEval({
       target: () => pageRef.current,
     },
   ];
-  const [choices, setChoices] = useState<string[]>(new Array(problems.length));
   return (
     <div className="p-3" ref={pageRef}>
       <Tour
@@ -122,12 +125,9 @@ function FunctionalityEval({
       <CodeBlock codeText={codeText}></CodeBlock>
       {problems?.map((problem, index) => (
         <SingletonQuestion
-          chosen={choices[index]}
+          chosen={choices.find((value) => value.title == problem.title)?.choice}
           onSelect={(mark) => {
-            setChoices((choices) => {
-              choices[index] = mark;
-              return [...choices];
-            });
+            onChange(problem.title, mark);
           }}
           key={index}
           problem={problem}

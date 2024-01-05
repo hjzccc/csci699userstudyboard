@@ -13,6 +13,7 @@ type Props = {
   }[];
   sourceCode?: string;
   tourOpen?: boolean;
+  ranks?: { [key: string]: string };
 };
 import hljs from "highlight.js";
 import { Card, Form, Select, Tabs, Tour, TourProps } from "antd";
@@ -25,6 +26,7 @@ function Question({
   initialHint = "",
   index = -1,
   tourOpen = false,
+  ranks = {},
 }: Props) {
   const currentHint = initialHint;
   const [form] = Form.useForm();
@@ -37,6 +39,10 @@ function Question({
   const codeTabRef = useRef(null);
   const rankAreaRef = useRef(null);
   const rankSelectRef = useRef(null);
+
+  for (const key in form.getFieldsValue().ranks) {
+    form.setFieldValue(["ranks", key], ranks[key] || "");
+  }
   const steps: TourProps["steps"] = [
     {
       title: "Readability Rank",
@@ -120,14 +126,16 @@ function Question({
             <label className="pt-1.5">
               rank from the best to worst readability:{" "}
             </label>
-            {codeOptions.map((value, index) => (
-              <Form.Item key={index} name={["ranks", `rank${index}`]}>
-                <Select
-                  options={codeOptions}
-                  defaultValue={codeOptions[0]}
-                ></Select>
-              </Form.Item>
-            ))}
+            {codeOptions.map((value, index) => {
+              return (
+                <Form.Item key={value.label} name={["ranks", `rank${index}`]}>
+                  <Select
+                    className=" min-w-[100px]"
+                    options={codeOptions}
+                  ></Select>
+                </Form.Item>
+              );
+            })}
           </div>
         </Form>
       </div>

@@ -14,12 +14,20 @@ export default function CodeSamplePage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const router = useRouter();
   const [tabName, setTabName] = useState("Summary");
-  const examples: CodeExample[] = [
+  const examples: (CodeExample & {
+    summaryEval: {
+      generated: {
+        rate: number;
+      }[];
+    };
+  })[] = [
     {
-      codeSamples: [
-        {
-          title: "wasm2c",
-          content: `
+      readabilityEval: {
+        id: -1,
+        codeSamples: [
+          {
+            title: "wasm2c",
+            content: `
 u32 w2c__has_close_elements0x28std0x3A0x3A_0x5F20x3A0x3Avector0x3Cfloat0x2C0x20std0x3A0x3A_0x5F20x3A0x3Aallocator0x3Cfloat0x3E0x3E0x2C0x20float0x29(w2c_* instance, u32 var_p0, f32 var_p1) {
   u32 var_l2 = 0, var_l3 = 0, var_l4 = 0, var_l5 = 0, var_l6 = 0, var_l7 = 0;
   FUNC_PROLOGUE;
@@ -87,10 +95,10 @@ u32 w2c__has_close_elements0x28std0x3A0x3A_0x5F20x3A0x3Avector0x3Cfloat0x2C0x20s
   return var_i0;
 }
         `,
-        },
-        {
-          title: "our approach",
-          content: `
+          },
+          {
+            title: "our approach",
+            content: `
 #include <algorithm>
 #include <stdlib.h>
 // has_close_elements
@@ -118,9 +126,11 @@ bool has_close_elements(const std::vector<float>& vec, float threshold) {
 
 } // extern "C"
           `,
-        },
-      ],
-      problemEval: {
+          },
+        ],
+      },
+      functionalityEval: {
+        id: -1,
         codeText: `
 #include <algorithm>
 #include <stdlib.h>
@@ -176,7 +186,8 @@ bool has_close_elements(const std::vector<float>& vec, float threshold) {
           },
         ],
       },
-      summary: {
+      summaryEval: {
+        id: -1,
         groundTruth: `Check if in given vector of numbers, are any two numbers closer to each other than given threshold.
 >>> has_close_elements({1.0, 2.0, 3.0}, 0.5)
 false
@@ -184,16 +195,22 @@ false
 true
         `,
         generated: [
-          `
+          {
+            text: `
 The Wasm function seems to check a given float vector (starts at memory address \`start_address\`) to see if it contains close elements based on a threshold (\`threshold\`).
-
+            
 A score of 3 can be given because it is able to identify the function aims to “see if it contains close elements based on a threshold,” which is a paraphrase of “if any two numbers closer to each other than the given threshold”          
-        `,
-          `
+                    `,
+            rate: 3,
+          },
+          {
+            text: `
 The main function, $func1, takes an i32 and a f32 as parameters and returns an i32. It involves complex arithmetic and looping operations. The function appears to be performing a comparison and manipulation of floating-point values, possibly iterating over a data structure in memory. It includes conditionals and branching, indicating some form of decision-making process based on the input and computed values. 
-
+            
 A score of 1 can be given because it only identifies the low-level operations of the function (comparison, manipulation of floats) but not the high-level functionality, i.e. comparing the difference between two elements with a threshold value.
-        `,
+                    `,
+            rate: 1,
+          },
         ],
       },
     },
@@ -259,15 +276,7 @@ A score of 1 can be given because it only identifies the low-level operations of
             type="button"
             className="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-xl text-sm p-2.5 text-center m-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
             onClick={async () => {
-              try {
-                const response = await fetch("/api/submit", {
-                  method: "POST",
-                  body: localStorage.getItem("scores"),
-                });
-                if (response.ok) {
-                  router.push("/thanks");
-                }
-              } catch {}
+              router.push("/evaluate/evaluation");
             }}
           >
             Proceed to Evaluation
@@ -278,14 +287,21 @@ A score of 1 can be given because it only identifies the low-level operations of
             <div className={`${tabName != "Summary" ? "hidden" : ""}`}>
               <SummaryEval
                 tourOpen={summaryTour}
-                groundTruth={currentExample.summary.groundTruth}
-                generatedSummaries={currentExample.summary.generated}
+                groundTruth={currentExample.summaryEval.groundTruth}
+                generatedSummaries={currentExample.summaryEval.generated.map(
+                  (value) => value.text
+                )}
+                rates={currentExample.summaryEval.generated.map((value) => ({
+                  summary: value.text,
+                  //@ts-ignore
+                  rate: value.rate,
+                }))}
               ></SummaryEval>
             </div>
             <div className={`${tabName != "Readability" ? "hidden" : ""}`}>
               <Question
                 tourOpen={readabilityTour}
-                codeSamples={currentExample.codeSamples}
+                codeSamples={currentExample.readabilityEval.codeSamples}
                 // sourceCode={currentExample.sourceCode}
                 onChange={(values) => {
                   localStorage.setItem("results", JSON.stringify(values));
@@ -296,8 +312,8 @@ A score of 1 can be given because it only identifies the low-level operations of
             <div className={`${tabName != "Functionality" ? "hidden" : ""}`}>
               <FunctionalityEval
                 tourOpen={functionalityTour}
-                problems={currentExample.problemEval.problems}
-                codeText={currentExample.problemEval.codeText}
+                problems={currentExample.functionalityEval.problems}
+                codeText={currentExample.functionalityEval.codeText}
               ></FunctionalityEval>
             </div>
           </div>

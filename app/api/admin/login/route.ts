@@ -2,13 +2,15 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { kv } from "@vercel/kv";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { adminpass } from "@/utils";
+
 export async function GET(request: NextRequest) {
-  const id = request.nextUrl.searchParams.get("id") ?? "";
-  const data = await kv.hget("participants", id);
-  if (!data) {
+  const password = request.nextUrl.searchParams.get("password") ?? "";
+  console.log(password);
+  if (password != adminpass) {
     return new Response("UnAuthorized", { status: 401 });
   }
   let response = new NextResponse("Ok", { status: 200 });
-  response.cookies.set("volunteer", id);
+  response.cookies.set("admin", adminpass);
   return response;
 }

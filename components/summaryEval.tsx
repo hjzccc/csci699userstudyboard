@@ -26,6 +26,8 @@ type Props = {
   groundTruth: string;
   generatedSummaries: string[];
   tourOpen: boolean;
+  onChange?: (summary: string, rate: number) => void;
+  rates?: { summary: string; rate: number }[];
 };
 const evaluationInstruction = `
 You will evaluate the generated summaries based on the ground truth summary. 
@@ -38,11 +40,11 @@ function SummaryEval({
   groundTruth,
   generatedSummaries,
   tourOpen = false,
+  onChange = () => {},
+  rates = [],
 }: Props) {
   const [tourPerformed, setTourPerformed] = useState(false);
   const ref1 = useRef(null);
-  const ref2 = useRef(null);
-  const ref3 = useRef(null);
   const steps: TourProps["steps"] = [
     {
       title: "Summary Evaluation ",
@@ -76,11 +78,11 @@ function SummaryEval({
             {summary}
           </Markdown>
           <Rate
-            defaultValue={0}
+            value={rates.find((value) => value?.summary == summary)?.rate || 0}
             className="mt-4"
             count={3}
             onChange={(value) => {
-              console.log(value);
+              onChange(summary, value);
             }}
           ></Rate>
         </Card>
