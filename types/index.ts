@@ -16,7 +16,7 @@ export type CodeExample = {
   summaryEval: {
     id: number;
     groundTruth: string;
-    generated: { text: string }[];
+    generated: { text: string; title: string }[];
   };
 };
 export type StoredCodeSample = {
@@ -41,6 +41,7 @@ export type SummaryResult = {
   results: {
     summary: string;
     rate: number;
+    title: string;
   }[];
   extra: {
     groundTruth: string;

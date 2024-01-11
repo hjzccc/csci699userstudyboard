@@ -41,6 +41,7 @@ export default function EvaluationPage() {
             results:
               example.summaryEval.generated?.map((value) => ({
                 summary: value.text,
+                title: value.title,
                 rate: -1,
               })) || [],
             extra: {
