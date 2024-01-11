@@ -23,7 +23,7 @@ export default function CodeSamplePage() {
   })[] = [
     {
       readabilityEval: {
-        id: -1,
+        id: "-1",
         codeSamples: [
           {
             title: "wasm2c",
@@ -130,7 +130,7 @@ bool has_close_elements(const std::vector<float>& vec, float threshold) {
         ],
       },
       functionalityEval: {
-        id: -1,
+        id: "-1",
         codeText: `
 #include <algorithm>
 #include <stdlib.h>
@@ -187,7 +187,7 @@ bool has_close_elements(const std::vector<float>& vec, float threshold) {
         ],
       },
       summaryEval: {
-        id: -1,
+        id: "-1",
         groundTruth: `Check if in given vector of numbers, are any two numbers closer to each other than given threshold.
 >>> has_close_elements({1.0, 2.0, 3.0}, 0.5)
 false
