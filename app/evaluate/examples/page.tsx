@@ -202,6 +202,7 @@ The Wasm function seems to check a given float vector (starts at memory address 
 A score of 3 can be given because it is able to identify the function aims to “see if it contains close elements based on a threshold,” which is a paraphrase of “if any two numbers closer to each other than the given threshold”          
                     `,
             rate: 3,
+            title: "Summary 1",
           },
           {
             text: `
@@ -210,6 +211,7 @@ The main function, $func1, takes an i32 and a f32 as parameters and returns an i
 A score of 1 can be given because it only identifies the low-level operations of the function (comparison, manipulation of floats) but not the high-level functionality, i.e. comparing the difference between two elements with a threshold value.
                     `,
             rate: 1,
+            title: "Summary 2",
           },
         ],
       },
