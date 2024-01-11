@@ -225,6 +225,9 @@ const AddSample = () => {
             </>
           )}
         </Form.List>
+        <Form.Item name="metadata">
+          <TextArea placeholder="extra data here"></TextArea>
+        </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
             Submit
