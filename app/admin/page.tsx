@@ -108,17 +108,17 @@ const AddSample = () => {
                   style={{ display: "flex", marginBottom: 8 }}
                   align="baseline"
                 >
-                  <Form.Item {...restField} name={[name, "content"]}>
-                    <TextArea placeholder="Generated Summary Here" />
-                  </Form.Item>
-                  <MinusCircleOutlined onClick={() => remove(name)} />
                   <Form.Item
                     {...restField}
                     name={[name, "title"]}
                     rules={[{ required: true, message: "Missing name" }]}
                   >
-                    <Input placeholder="Sample Name" />
+                    <Input placeholder="Summary Name" />
                   </Form.Item>
+                  <Form.Item {...restField} name={[name, "content"]}>
+                    <TextArea placeholder="Generated Summary Here" />
+                  </Form.Item>
+                  <MinusCircleOutlined onClick={() => remove(name)} />
                 </Space>
               ))}
               <Form.Item>
