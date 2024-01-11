@@ -9,6 +9,7 @@ import { ColumnsType } from "antd/es/table";
 import useSWR from "swr";
 import dynamic from "next/dynamic";
 import loadable from "@loadable/component";
+import { useRouter } from "next/navigation";
 const ReactJson = loadable(() => import("react-json-view"));
 export type SingletonSample = {
   readabilityEval: {
@@ -35,6 +36,7 @@ export type SingletonSample = {
 };
 const AddSample = () => {
   const [form] = Form.useForm();
+  const router = useRouter();
   return (
     <div className="p-2">
       <Toaster />
@@ -52,6 +54,7 @@ const AddSample = () => {
             });
             if (!response.ok) throw new Error("Failed to add sample");
             toast.success("Added sample");
+            form.resetFields();
           } catch (err: any) {
             toast.error(err.message);
           }
