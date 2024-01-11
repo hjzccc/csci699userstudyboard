@@ -33,6 +33,7 @@ export type SingletonSample = {
       answer: number;
     }[];
   };
+  metadata: string;
 };
 const AddSample = () => {
   const [form] = Form.useForm();

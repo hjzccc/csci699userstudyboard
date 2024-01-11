@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
             title: item.title,
           })) || [],
       },
+      metadata: rawData.metadata,
     },
   });
   if (res) {

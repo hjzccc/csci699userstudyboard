@@ -35,6 +35,7 @@ export type StoredCodeSample = {
     groundTruth: string;
     generated: { text: string; title: string }[];
   };
+  metadata: string;
 };
 export type SummaryResult = {
   id: number;
