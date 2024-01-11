@@ -240,17 +240,18 @@ const AddSample = () => {
   );
 };
 const Samples = () => {
-  const { data, isLoading, error, mutate } = useSWR<StoredCodeSample[]>(
+  const { data, isLoading, error, mutate } = useSWR<any[]>(
     "/api/admin/samples",
     (url: string) => fetch(url).then((data) => data.json())
   );
-  const columns: ColumnsType<StoredCodeSample> = [
+  console.log(data);
+  const columns: ColumnsType<StoredCodeSample & { id: string }> = [
     {
       title: "Id",
       dataIndex: "id",
       key: "id",
       width: 100,
-      render: (_, data) => <a>{data.functionalityEval.id}</a>,
+      render: (_, data) => <a>{data.id}</a>,
     },
     {
       title: "Sample",
@@ -270,15 +271,12 @@ const Samples = () => {
           type="primary"
           onClick={async () => {
             try {
-              const response = await fetch(
-                `/api/admin/samples/${data.functionalityEval.id}`,
-                {
-                  method: "DELETE",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
+              const response = await fetch(`/api/admin/samples/${data.id}`, {
+                method: "DELETE",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              });
 
               if (!response.ok) throw new Error("Failed to delete");
               toast.success("Deleted");
@@ -295,6 +293,7 @@ const Samples = () => {
     },
   ];
   if (isLoading || error) return <div>loading...</div>;
+  console.log(data);
   return (
     <>
       <Toaster />

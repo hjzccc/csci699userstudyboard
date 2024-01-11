@@ -21,24 +21,24 @@ export type CodeExample = {
 };
 export type StoredCodeSample = {
   readabilityEval: {
-    id: number;
+    id: string;
     codeSamples: { title: string; content: string }[];
   };
   initialHint?: string;
   functionalityEval: {
-    id: number;
+    id: string;
     codeText: string;
     problems: ProblemWithAnswer[];
   };
   summaryEval: {
-    id: number;
+    id: string;
     groundTruth: string;
     generated: { text: string; title: string }[];
   };
   metadata: string;
 };
 export type SummaryResult = {
-  id: number;
+  id: string;
   results: {
     summary: string;
     rate: number;
@@ -49,7 +49,7 @@ export type SummaryResult = {
   };
 };
 export type FunctionalityResult = {
-  id: number;
+  id: string;
   results: {
     title: string;
     choice: number;
@@ -60,7 +60,7 @@ export type FunctionalityResult = {
   };
 };
 export type ReadabilityResult = {
-  id: number;
+  id: string;
   results: { [key: string]: string };
   extra: {
     codeSamples: { title: string; content: string }[];
