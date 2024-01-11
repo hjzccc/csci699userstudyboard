@@ -7,14 +7,14 @@ type ProblemWithAnswer = Problem & {
 };
 export type CodeExample = {
   readabilityEval: {
-    id: number;
+    id: string;
     codeSamples: { title: string; content: string }[];
   };
 
   initialHint?: string;
-  functionalityEval: { id: number; codeText: string; problems: Problem[] };
+  functionalityEval: { id: string; codeText: string; problems: Problem[] };
   summaryEval: {
-    id: number;
+    id: string;
     groundTruth: string;
     generated: { text: string; title: string }[];
   };
