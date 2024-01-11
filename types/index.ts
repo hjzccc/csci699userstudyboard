@@ -33,7 +33,7 @@ export type StoredCodeSample = {
   summaryEval: {
     id: number;
     groundTruth: string;
-    generated: { text: string }[];
+    generated: { text: string; title: string }[];
   };
 };
 export type SummaryResult = {

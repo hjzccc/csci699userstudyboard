@@ -19,7 +19,10 @@ export type SingletonSample = {
   };
   summaryEval: {
     groundTruth: string;
-    generated: string[];
+    generated: {
+      title: string;
+      content: string;
+    }[];
   };
   functionalityEval: {
     codeText: string;
@@ -38,7 +41,7 @@ const AddSample = () => {
       <Form
         form={form}
         style={{ maxWidth: 600 }}
-        onFinish={async (values) => {
+        onFinish={async (values: SingletonSample) => {
           try {
             const response = await fetch("api/admin/samples", {
               method: "POST",
@@ -105,10 +108,17 @@ const AddSample = () => {
                   style={{ display: "flex", marginBottom: 8 }}
                   align="baseline"
                 >
-                  <Form.Item {...restField} name={name}>
+                  <Form.Item {...restField} name={[name, "content"]}>
                     <TextArea placeholder="Generated Summary Here" />
                   </Form.Item>
                   <MinusCircleOutlined onClick={() => remove(name)} />
+                  <Form.Item
+                    {...restField}
+                    name={[name, "title"]}
+                    rules={[{ required: true, message: "Missing name" }]}
+                  >
+                    <Input placeholder="Sample Name" />
+                  </Form.Item>
                 </Space>
               ))}
               <Form.Item>

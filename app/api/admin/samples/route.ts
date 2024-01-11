@@ -37,7 +37,8 @@ export async function POST(request: NextRequest) {
         groundTruth: rawData.summaryEval.groundTruth,
         generated:
           rawData.summaryEval.generated?.map((item) => ({
-            text: item,
+            text: item.content,
+            title: item.title,
           })) || [],
       },
     },
