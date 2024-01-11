@@ -163,14 +163,15 @@ const AddSample = () => {
                   <Form.List name={[name, "choices"]}>
                     {(fields, { add, remove }) => (
                       <>
-                        {fields.map((field) => (
+                        {fields.map(({ key, name, ...restField }) => (
                           <Space
                             key={key}
                             style={{ display: "flex", marginBottom: 8 }}
                             align="baseline"
                           >
                             <Form.Item
-                              {...field}
+                              {...restField}
+                              name={name}
                               rules={[
                                 {
                                   required: true,
