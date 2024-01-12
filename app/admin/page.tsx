@@ -79,7 +79,11 @@ const AddSample = () => {
                   >
                     <Input placeholder="Sample Name" />
                   </Form.Item>
-                  <Form.Item {...restField} name={[name, "content"]}>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "content"]}
+                    rules={[{ required: true, message: "Missing code" }]}
+                  >
                     <TextArea placeholder="Code Here" />
                   </Form.Item>
                   <MinusCircleOutlined onClick={() => remove(name)} />
@@ -100,7 +104,10 @@ const AddSample = () => {
             </>
           )}
         </Form.List>
-        <Form.Item name={["summaryEval", "groundTruth"]}>
+        <Form.Item
+          name={["summaryEval", "groundTruth"]}
+          rules={[{ required: true, message: "Missing ground truth" }]}
+        >
           <TextArea placeholder="Ground Truth Here" />
         </Form.Item>
         <Form.List name={["summaryEval", "generated"]}>
@@ -119,7 +126,11 @@ const AddSample = () => {
                   >
                     <Input placeholder="Summary Name" />
                   </Form.Item>
-                  <Form.Item {...restField} name={[name, "content"]}>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "content"]}
+                    rules={[{ required: true, message: "Missing summary" }]}
+                  >
                     <TextArea placeholder="Generated Summary Here" />
                   </Form.Item>
                   <MinusCircleOutlined onClick={() => remove(name)} />
@@ -140,7 +151,10 @@ const AddSample = () => {
             </>
           )}
         </Form.List>
-        <Form.Item name={["functionalityEval", "codeText"]}>
+        <Form.Item
+          name={["functionalityEval", "codeText"]}
+          rules={[{ required: true, message: "Missing Code Text" }]}
+        >
           <TextArea placeholder="Functionality codeText Here"></TextArea>
         </Form.Item>
         <Form.List name={["functionalityEval", "problems"]}>
@@ -401,14 +415,14 @@ function Page() {
             key: "2",
             children: <Samples></Samples>,
           },
-          {
-            label: "Results",
-            key: "3",
-            children: <Results></Results>,
-          },
+          // {
+          //   label: "Results",
+          //   key: "3",
+          //   children: <Results></Results>,
+          // },
           {
             label: "Participants",
-            key: "4",
+            key: "3",
             children: <Participants></Participants>,
           },
         ]}

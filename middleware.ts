@@ -2,13 +2,17 @@ import { NextResponse, NextRequest } from "next/server";
 
 import next from "next";
 import { adminpass } from "./utils";
+import { PARTICIPANT_LIST_NAME, USER_COOKIE_NAME } from "./utils/constants";
+import path from "path";
+import { kv } from "@vercel/kv";
+import { Participant } from "./types";
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const nextUrl = req.nextUrl;
   const pathName = nextUrl.pathname;
   const isStaticResource = /\.\w+$/.test(pathName);
-  console.log(pathName);
-  console.log(isStaticResource);
+  // console.log(pathName);
+  // console.log(isStaticResource);
   if (pathName.startsWith("/api/admin") || pathName.startsWith("/admin")) {
     if (pathName != "/admin/login" && pathName != "/api/admin/login") {
       if (
@@ -19,12 +23,17 @@ export function middleware(req: NextRequest) {
       }
     }
   } else if (
-    !isStaticResource &&
-    !pathName.startsWith("/api") &&
-    pathName != "/"
+    pathName == "/api/evaluation" ||
+    pathName == "/api/evaluation/results" ||
+    pathName == "/evaluate/evaluation"
   ) {
-    if (!req.cookies.get("volunteer")) {
-      return new NextResponse("UnAuthorized", { status: 401 });
+    const participantId = req.cookies.get("participantId")?.value ?? "";
+    const participant: Participant | null = await kv.hget(
+      PARTICIPANT_LIST_NAME,
+      participantId
+    );
+    if (!participant || participant.status != "pending") {
+      return NextResponse.redirect(new URL("/thanks", req.url));
     }
   }
 }

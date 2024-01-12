@@ -144,7 +144,7 @@ export default function EvaluationPage() {
                   body: JSON.stringify(evaluationResults),
                 });
                 if (response.ok) {
-                  router.push("/thanks");
+                  router.replace("/thanks");
                 }
               } catch {}
             }}

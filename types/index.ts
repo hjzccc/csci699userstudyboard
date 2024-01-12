@@ -71,3 +71,8 @@ export type EvaluateResult = {
   functionality: FunctionalityResult;
   readability: ReadabilityResult;
 };
+export type Participant = {
+  results: Partial<EvaluateResult>;
+  status: "pending" | "done";
+  submissionTime: number;
+};

@@ -70,7 +70,7 @@ function SummaryEval({
       {generatedSummaries?.map((summary, index) => (
         <Card
           key={index}
-          title={`Generated Summary ${index + 1}}`}
+          title={`Generated Summary ${index + 1}`}
           bordered={true}
           className="m-4"
         >
