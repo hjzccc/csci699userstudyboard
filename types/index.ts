@@ -1,75 +1,68 @@
-export type Problem = {
+export type Question = {
   title: string;
   choices: string[];
 };
-type ProblemWithAnswer = Problem & {
+type QuestionWithAnswer = Question & {
   answer: number;
 };
-export type CodeExample = {
-  readabilityEval: {
-    id: string;
-    codeSamples: { title: string; content: string }[];
-  };
-
-  initialHint?: string;
-  functionalityEval: { id: string; codeText: string; problems: Problem[] };
-  summaryEval: {
-    id: string;
-    groundTruth: string;
-    generated: { text: string; title: string }[];
-  };
+export type CodeSample = { title: string; content: string };
+export type MultipleChoiceQuestion = {
+  tag: string;
+  id: string;
+  codeText: string;
+  questions: QuestionWithAnswer[];
 };
-export type StoredCodeSample = {
+export type ReadabilitySample = {
+  tag: string;
+  id: string;
+  sample1: CodeSample;
+  sample2: CodeSample;
+  source: CodeSample;
+};
+export type EvaluationTest = {
   readabilityEval: {
-    id: string;
-    codeSamples: { title: string; content: string }[];
+    codeSamples: ReadabilitySample[];
   };
-  initialHint?: string;
   functionalityEval: {
-    id: string;
-    codeText: string;
-    problems: ProblemWithAnswer[];
+    questionSamples: MultipleChoiceQuestion[];
   };
-  summaryEval: {
-    id: string;
-    groundTruth: string;
-    generated: { text: string; title: string }[];
-  };
-  metadata: string;
+  // summaryEval: {
+  //   id: string;
+  //   groundTruth: string;
+  //   generated: { text: string; title: string }[];
+  // };
 };
-export type SummaryResult = {
-  id: string;
-  results: {
-    summary: string;
-    rate: number;
-    title: string;
-  }[];
-  extra: {
-    groundTruth: string;
-  };
-};
+// export type SummaryResult = {
+//   id: string;
+//   results: {
+//     summary: string;
+//     rate: number;
+//     title: string;
+//   }[];
+//   extra: {
+//     groundTruth: string;
+//   };
+// };
 export type FunctionalityResult = {
-  id: string;
-  results: {
-    title: string;
-    choice: number;
-  }[];
-  extra: {
+  sampleId: string;
+  result: {
     codeText: string;
-    problems: Problem[];
+    questions: { title: string; choice: number; answer: number }[];
   };
 };
 export type ReadabilityResult = {
-  id: string;
-  results: { [key: string]: string };
-  extra: {
-    codeSamples: { title: string; content: string }[];
+  sampleId: string;
+  result: {
+    sample1: CodeSample;
+    sample2: CodeSample;
+    source: CodeSample;
+    relative: "greater" | "less" | "equal" | ""; // compare sample 1 with sample 2
   };
 };
 export type EvaluateResult = {
-  summary: SummaryResult;
-  functionality: FunctionalityResult;
-  readability: ReadabilityResult;
+  // summary: SummaryResult;
+  functionality: FunctionalityResult[];
+  readability: ReadabilityResult[];
 };
 export type Participant = {
   results: Partial<EvaluateResult>;

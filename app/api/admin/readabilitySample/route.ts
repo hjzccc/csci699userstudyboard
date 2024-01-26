@@ -2,17 +2,21 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { kv } from "@vercel/kv";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { CodeExample, StoredCodeSample } from "@/types";
+import { EvaluationTest, ReadabilitySample } from "@/types";
 import { SingletonSample } from "@/app/admin/page";
 import { v4 as uuidv4 } from "uuid";
+import { READABILITY_SAMPLE_LIST_NAME } from "@/utils/constants";
+import { ReadabilityFormData } from "@/components/readabilitySampleForm";
 export const dynamic = "force-dynamic";
+const sampleListName = READABILITY_SAMPLE_LIST_NAME;
 export async function GET(request: NextRequest) {
-  let samples = await kv.hgetall("testList1");
+  let samples = await kv.hgetall<{ [key: string]: ReadabilitySample }>(
+    sampleListName
+  );
   let records = [];
   for (const key in samples) {
     records.push({
-      id: key,
-      ...(samples[key] as StoredCodeSample),
+      ...samples[key],
     });
   }
   let response = new NextResponse(JSON.stringify(records), {
@@ -22,32 +26,18 @@ export async function GET(request: NextRequest) {
 }
 export async function POST(request: NextRequest) {
   console.log("request go in");
-  let rawData: SingletonSample = await request.json();
-  let len = await kv.hlen("testList1");
+  let rawData: ReadabilityFormData = await request.json();
+  let len = await kv.hlen(sampleListName);
   console.log("len", len);
   const id = uuidv4();
   console.log(id);
-  const res = await kv.hset<StoredCodeSample>("testList1", {
+  const res = await kv.hset<ReadabilitySample>(sampleListName, {
     [id]: {
-      readabilityEval: {
-        id,
-        codeSamples: rawData.readabilityEval.codeSamples,
-      },
-      functionalityEval: {
-        id,
-        codeText: rawData.functionalityEval.codeText,
-        problems: rawData.functionalityEval.problems,
-      },
-      summaryEval: {
-        id,
-        groundTruth: rawData.summaryEval.groundTruth,
-        generated:
-          rawData.summaryEval.generated?.map((item) => ({
-            text: item.content,
-            title: item.title,
-          })) || [],
-      },
-      metadata: rawData.metadata,
+      id: id,
+      sample1: rawData.sample1,
+      sample2: rawData.sample2,
+      source: rawData.source,
+      tag: rawData.tag,
     },
   });
   if (res) {

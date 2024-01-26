@@ -1,4 +1,5 @@
 "use client";
+import { useAppSelector } from "@/hooks/redux";
 import { Card, Rate, Tour, TourProps } from "antd";
 import React, { useRef, useState } from "react";
 import Markdown from "react-markdown";
@@ -45,6 +46,7 @@ function SummaryEval({
 }: Props) {
   const [tourPerformed, setTourPerformed] = useState(false);
   const ref1 = useRef(null);
+  const evaluationResults = useAppSelector((state) => state.evaluationResults);
   const steps: TourProps["steps"] = [
     {
       title: "Summary Evaluation ",

@@ -1,9 +1,14 @@
-import { Card, Tour, TourProps } from "antd";
+import { Card, Tabs, Tour, TourProps } from "antd";
 import React, { useRef, useState } from "react";
 import CodeBlock from "./codeblock";
-import { EvaluateResult, Problem } from "@/types";
+import {
+  EvaluateResult,
+  FunctionalityResult,
+  MultipleChoiceQuestion,
+  Question,
+} from "@/types";
 
-const problems: Problem[] = [
+const problems: Question[] = [
   {
     title: "When will the model exit and return true?",
     choices: [
@@ -62,7 +67,7 @@ function SingletonQuestion({
   onSelect,
   chosen = -1,
 }: {
-  problem: Problem;
+  problem: Question;
   onSelect: (optionMark: number) => void;
   chosen?: number;
 }) {
@@ -90,18 +95,16 @@ function SingletonQuestion({
   );
 }
 type Props = {
-  codeText: string;
-  problems: Problem[];
+  multipleChoiceQuestions: MultipleChoiceQuestion[];
   tourOpen: boolean;
-  onChange?: (title: string, choice: number) => void;
-  choices?: { title: string; choice: number }[];
+  onChange?: (values: FunctionalityResult[]) => void;
+  functionalityResult?: FunctionalityResult[];
 };
 function FunctionalityEval({
-  codeText = "",
-  problems = [],
+  multipleChoiceQuestions = [],
   tourOpen = false,
   onChange = () => {},
-  choices = [],
+  functionalityResult = [],
 }: Props) {
   const [tourPerformed, setTourPerformed] = React.useState(false);
   const pageRef = useRef(null);
@@ -110,29 +113,58 @@ function FunctionalityEval({
     {
       title: "Functionality Evaluation",
       description:
-        "You will answer a few questions about the code to show your understanding of the code.",
-      placement: "center",
+        "You will answer a few questions about the code to show if you can understand the given code correctly.",
       target: () => pageRef.current,
     },
   ];
   return (
-    <div className="p-3" ref={pageRef}>
+    <div className="p-3">
       <Tour
         open={tourOpen && !tourPerformed}
         steps={steps}
         onClose={() => setTourPerformed(true)}
       ></Tour>
-      <CodeBlock codeText={codeText}></CodeBlock>
-      {problems?.map((problem, index) => (
-        <SingletonQuestion
-          chosen={choices.find((value) => value.title == problem.title)?.choice}
-          onSelect={(mark) => {
-            onChange(problem.title, mark);
-          }}
-          key={index}
-          problem={problem}
-        ></SingletonQuestion>
-      ))}
+      <div ref={pageRef}>
+        <Tabs
+          centered
+          defaultActiveKey="1"
+          items={multipleChoiceQuestions.map((mcq, index) => ({
+            label: `Code${index + 1}`,
+            key: `${index}`,
+            children: (
+              <>
+                <CodeBlock codeText={mcq.codeText}></CodeBlock>
+                {mcq.questions?.map((question, index) => (
+                  <SingletonQuestion
+                    chosen={
+                      functionalityResult
+                        .find((value) => value.sampleId == mcq.id)
+                        ?.result.questions.find(
+                          (value) => value.title == question.title
+                        )?.choice
+                    }
+                    onSelect={(choice) => {
+                      const updataedFunctionalityResult = [
+                        ...functionalityResult,
+                      ];
+                      const currentSelected = updataedFunctionalityResult
+                        .find((value) => value.sampleId == mcq.id)
+                        ?.result.questions.find(
+                          (value) => value.title == question.title
+                        );
+                      if (!currentSelected) return;
+                      currentSelected.choice = choice;
+                      onChange(updataedFunctionalityResult);
+                    }}
+                    key={index}
+                    problem={question}
+                  ></SingletonQuestion>
+                ))}
+              </>
+            ),
+          }))}
+        ></Tabs>
+      </div>
     </div>
   );
 }

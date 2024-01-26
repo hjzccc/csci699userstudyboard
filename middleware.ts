@@ -11,8 +11,6 @@ export async function middleware(req: NextRequest) {
   const nextUrl = req.nextUrl;
   const pathName = nextUrl.pathname;
   const isStaticResource = /\.\w+$/.test(pathName);
-  // console.log(pathName);
-  // console.log(isStaticResource);
   if (pathName.startsWith("/api/admin") || pathName.startsWith("/admin")) {
     if (pathName != "/admin/login" && pathName != "/api/admin/login") {
       if (

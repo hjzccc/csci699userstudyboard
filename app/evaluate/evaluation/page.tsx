@@ -1,11 +1,10 @@
 "use client";
-import Question from "@/components/question";
+import ReadabilityEval from "@/components/readabilityEval";
 import {
-  CodeExample,
+  EvaluationTest,
   EvaluateResult,
   FunctionalityResult,
   ReadabilityResult,
-  SummaryResult,
 } from "@/types";
 import { useRouter } from "next/navigation";
 import React, { Suspense, use, useEffect, useRef, useState } from "react";
@@ -18,15 +17,20 @@ import FunctionalityEval from "@/components/functionalityEval";
 import { Button, Tabs, Tour } from "antd";
 import type { TourProps } from "antd";
 import { json } from "stream/consumers";
+import { useSelector } from "react-redux";
+import { RootState } from "@/hooks/redux/store";
+import { useAppSelector } from "@/hooks/redux";
+import { current } from "@reduxjs/toolkit";
+import { LockOutlined } from "@ant-design/icons";
 export default function EvaluationPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const router = useRouter();
-  const [tabName, setTabName] = useState("Summary");
+  const [tabName, setTabName] = useState("Functionality");
   const {
     data: evaluationSet,
     isLoading,
     error,
-  } = useSWRImmutable<CodeExample[]>("/api/evaluation", (url: string) =>
+  } = useSWRImmutable<EvaluationTest[]>("/api/evaluation", (url: string) =>
     fetch(url).then((data) => data.json())
   );
   const [evaluationResults, setEvaluationResults] = useState<EvaluateResult[]>(
@@ -34,39 +38,36 @@ export default function EvaluationPage() {
   );
   useEffect(() => {
     const initialResult: EvaluateResult[] =
-      evaluationSet?.map((example) => {
+      evaluationSet?.map((evaluation) => {
+        const readabilityResult: ReadabilityResult[] =
+          evaluation.readabilityEval.codeSamples?.map((codeSample) => {
+            return {
+              sampleId: codeSample.id,
+              result: {
+                sample1: codeSample.sample1,
+                sample2: codeSample.sample2,
+                source: codeSample.source,
+                relative: "",
+              },
+            };
+          }) || [];
+        const functionalityResult: FunctionalityResult[] =
+          evaluation.functionalityEval.questionSamples?.map((mcq) => {
+            return {
+              sampleId: mcq.id,
+              result: {
+                codeText: mcq.codeText,
+                questions: mcq.questions?.map((question) => ({
+                  title: question.title,
+                  choice: -1,
+                  answer: question.answer,
+                })),
+              },
+            };
+          }) || [];
         return {
-          summary: {
-            id: example.summaryEval.id,
-            results:
-              example.summaryEval.generated?.map((value) => ({
-                summary: value.text,
-                title: value.title,
-                rate: -1,
-              })) || [],
-            extra: {
-              groundTruth: example.summaryEval.groundTruth,
-            },
-          },
-          readability: {
-            id: example.readabilityEval.id,
-            results: {},
-            extra: {
-              codeSamples: example.readabilityEval.codeSamples || [],
-            },
-          },
-          functionality: {
-            id: example.functionalityEval.id,
-            results:
-              example.functionalityEval.problems?.map((value) => ({
-                title: value.title,
-                choice: -1,
-              })) || [],
-            extra: {
-              problems: example.functionalityEval.problems,
-              codeText: example.functionalityEval.codeText,
-            },
-          },
+          readability: readabilityResult,
+          functionality: functionalityResult,
         };
       }) || [];
     setEvaluationResults(initialResult);
@@ -75,47 +76,48 @@ export default function EvaluationPage() {
   if (isLoading || error || evaluationResults?.length == 0 || !evaluationSet) {
     return <div>loading...</div>;
   }
-  console.log(evaluationSet);
-  const currentExample = evaluationSet?.[currentIndex];
+  console.log("evaluationSet", evaluationSet);
+  const currentEvaluation = evaluationSet?.[currentIndex];
   const getTotalProgress = () => {
     let progress = 0;
-    evaluationSet.forEach((example) => {
-      if (example.summaryEval.generated?.length > 0) {
-        progress += 1;
-      }
-      if (example.readabilityEval.codeSamples?.length > 0) {
-        progress += 1;
-      }
-      if (example.functionalityEval.problems?.length > 0) {
-        progress += 1;
-      }
+    evaluationSet.forEach((evaluation) => {
+      progress += evaluation.readabilityEval.codeSamples?.length;
+      progress += evaluation.functionalityEval.questionSamples?.length;
     });
     return progress;
   };
+
+  const getCurrentFunctionalityResult = () => {
+    return evaluationResults[currentIndex].functionality.some(
+      (functionalityResult) => {
+        return functionalityResult.result?.questions?.some(
+          (value) => value.choice === -1
+        );
+      }
+    );
+  };
   const getCurrentProgress = () => {
-    let progress = 0;
+    let readabilityProgress = 0;
     evaluationResults.forEach((result) => {
-      if (
-        result.summary.results.length > 0 &&
-        result.summary.results.every((value) => value.rate != -1)
-      ) {
-        progress += 1;
-      }
-      if (
-        Object.keys(result.readability.results).length > 0 &&
-        Object.keys(result.readability.results).length ==
-          result.readability.extra.codeSamples.length
-      ) {
-        progress += 1;
-      }
-      if (
-        result.functionality.results.length > 0 &&
-        result.functionality.results.every((value) => value.choice != -1)
-      ) {
-        progress += 1;
-      }
+      result.readability.forEach((readabilityResult) => {
+        if (readabilityResult.result.relative) {
+          readabilityProgress += 1;
+        }
+      });
     });
-    return progress;
+    let functionalityProgress = 0;
+    evaluationResults.forEach((result) => {
+      result.functionality.forEach((functionalityResult) => {
+        if (
+          functionalityResult.result?.questions?.every(
+            (value) => value.choice != -1
+          )
+        ) {
+          functionalityProgress += 1;
+        }
+      });
+    });
+    return readabilityProgress + functionalityProgress;
   };
   console.log(evaluationResults);
   console.log(getTotalProgress(), getCurrentProgress());
@@ -128,6 +130,7 @@ export default function EvaluationPage() {
               key={index}
               onClick={() => {
                 setCurrentIndex((preIndex) => index);
+                setTabName("Functionality");
               }}
               className="w-full min-h-[96px] flex justify-center items-center text-white hover:bg-slate-700 border-b border-slate-700"
             >
@@ -138,15 +141,16 @@ export default function EvaluationPage() {
             type="primary"
             className=" text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-xl text-sm  text-center m-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
             onClick={async () => {
-              try {
-                const response = await fetch("/api/results", {
-                  method: "POST",
-                  body: JSON.stringify(evaluationResults),
-                });
-                if (response.ok) {
-                  router.replace("/thanks");
-                }
-              } catch {}
+              // try {
+              //   const response = await fetch("/api/results", {
+              //     method: "POST",
+              //     body: JSON.stringify(evaluationResults),
+              //   });
+              //   if (response.ok) {
+              //     router.replace("/thanks");
+              //   }
+              // } catch {}
+              console.log(evaluationResults);
             }}
             disabled={getCurrentProgress() != getTotalProgress()}
           >
@@ -156,7 +160,7 @@ export default function EvaluationPage() {
         <div className="flex w-[90%] flex-1 flex-col">
           <div className="overflow-auto">
             <div className={`${tabName != "Summary" ? "hidden" : ""}`}>
-              <SummaryEval
+              {/* <SummaryEval
                 rates={evaluationResults[currentIndex]?.summary.results || []}
                 tourOpen={false}
                 onChange={(summary, rate) => {
@@ -176,64 +180,53 @@ export default function EvaluationPage() {
                 generatedSummaries={currentExample.summaryEval.generated?.map(
                   (value) => value.text
                 )}
-              ></SummaryEval>
+              ></SummaryEval> */}
             </div>
             <div className={`${tabName != "Readability" ? "hidden" : ""}`}>
-              <Question
+              <ReadabilityEval
                 tourOpen={false}
-                codeSamples={currentExample.readabilityEval.codeSamples}
-                ranks={evaluationResults[currentIndex].readability.results}
-                onChange={(values) => {
+                codeSamples={currentEvaluation.readabilityEval.codeSamples}
+                readabilityResults={evaluationResults[currentIndex].readability}
+                onChange={(values: ReadabilityResult[]) => {
                   setEvaluationResults((pre) => {
-                    pre[currentIndex].readability.results = values.ranks;
-                    console.log(pre[currentIndex]);
-                    localStorage.setItem("newformat1", JSON.stringify(pre));
-                    return [...pre];
+                    const updated = [...pre];
+                    updated[currentIndex].readability = values;
+                    console.log(updated[currentIndex]);
+                    localStorage.setItem("newformat1", JSON.stringify(updated));
+                    return updated;
                   });
                 }}
-                initialHint={currentExample.initialHint}
-              ></Question>
+              ></ReadabilityEval>
             </div>
             <div className={`${tabName != "Functionality" ? "hidden" : ""}`}>
               <FunctionalityEval
-                onChange={(title, choice) => {
+                onChange={(values) => {
                   setEvaluationResults((pre) => {
-                    console.log(pre);
-                    let results = pre[currentIndex].functionality.results;
-                    let matchedResult = results?.find(
-                      (value) => value.title == title
-                    );
-                    if (matchedResult) {
-                      matchedResult.choice = choice;
-                    }
+                    const updated = [...pre];
+                    updated[currentIndex].functionality = values;
                     localStorage.setItem("newformat1", JSON.stringify(pre));
-                    return [...pre];
+                    return updated;
                   });
                 }}
-                choices={evaluationResults[currentIndex]?.functionality.results}
+                functionalityResult={
+                  evaluationResults[currentIndex]?.functionality
+                }
                 tourOpen={false}
-                problems={currentExample.functionalityEval.problems}
-                codeText={currentExample.functionalityEval.codeText}
+                multipleChoiceQuestions={
+                  currentEvaluation.functionalityEval.questionSamples
+                }
               ></FunctionalityEval>
             </div>
           </div>
           <div className="mt-auto h-12 w-full bottom-0 bg-slate-800 flex">
-            <button
+            {/* <button
               className="flex-1 text-center p-3 hover:bg-slate-700 text-white"
               onClick={() => {
                 setTabName("Summary");
               }}
             >
               Summary
-            </button>
-            <button
-              className="flex-1 text-center p-3 hover:bg-slate-700 text-white"
-              onClick={() => {
-                setTabName("Readability");
-              }}
-            >
-              Readability
-            </button>
+            </button> */}
             <button
               className="flex-1 text-center p-3 hover:bg-slate-700 text-white"
               onClick={() => {
@@ -241,6 +234,16 @@ export default function EvaluationPage() {
               }}
             >
               Functionality
+            </button>
+            <button
+              disabled={getCurrentFunctionalityResult()}
+              className="flex-1 text-center p-3 hover:bg-slate-700 text-white"
+              onClick={() => {
+                setTabName("Readability");
+              }}
+            >
+              {getCurrentFunctionalityResult() ? <LockOutlined /> : ""}
+              Readability
             </button>
           </div>
         </div>

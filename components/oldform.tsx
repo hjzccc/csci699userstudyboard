@@ -10,8 +10,6 @@ import useSWR from "swr";
 import dynamic from "next/dynamic";
 import loadable from "@loadable/component";
 import { useRouter } from "next/navigation";
-import ReadabilitySampleForm from "@/components/readabilitySampleForm";
-import FunctionalitySampleForm from "@/components/functionalitySampleForm";
 const ReactJson = loadable(() => import("react-json-view"));
 export type SingletonSample = {
   readabilityEval: {
@@ -410,22 +408,21 @@ function Page() {
           {
             label: "Add Sample",
             key: "1",
-            children: <ReadabilitySampleForm></ReadabilitySampleForm>,
-          },
-          {
-            label: "FunctionalitySamples",
-            key: "3",
-            children: <FunctionalitySampleForm></FunctionalitySampleForm>,
+            children: <AddSample></AddSample>,
           },
           {
             label: "Samples",
             key: "2",
             children: <Samples></Samples>,
           },
-
+          // {
+          //   label: "Results",
+          //   key: "3",
+          //   children: <Results></Results>,
+          // },
           {
             label: "Participants",
-            key: "4",
+            key: "3",
             children: <Participants></Participants>,
           },
         ]}

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@loadable/component": "^5.16.3",
+    "@reduxjs/toolkit": "^2.0.1",
     "@types/loadable__component": "^5.13.8",
     "@types/react-highlight": "^0.12.8",
     "@vercel/kv": "^0.2.4",
@@ -26,6 +27,7 @@
     "react-icons": "^4.11.0",
     "react-json-view": "^1.21.3",
     "react-markdown": "^9.0.1",
+    "react-redux": "^9.1.0",
     "react-syntax-highlighter": "^15.5.0",
     "swr": "^2.2.4",
     "tailwind-merge": "^2.0.0",
