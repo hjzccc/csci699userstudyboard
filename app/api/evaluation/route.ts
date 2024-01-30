@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
     [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
   }
   let selectedTags: string[] = [];
-  numbers.slice(0, 3).forEach((i) => {
+  numbers.slice(0, 10).forEach((i) => {
     selectedTags.push(allTags[i]);
   });
   console.log(selectedTags);
