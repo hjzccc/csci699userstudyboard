@@ -36,13 +36,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   console.log("request go in");
   let rawData: FunctionalityFormData = await request.json();
-  let len = await kv.hlen(sampleListName);
-  console.log("len", len);
-  const id = uuidv4();
-  console.log(id);
   const res = await kv.hset<MultipleChoiceQuestion>(sampleListName, {
     [`${rawData.tag}:${rawData.tag1}`]: {
-      id: id,
+      id: `${rawData.tag}:${rawData.tag1}`,
       codeText: rawData.codeText,
       questions: rawData.questions,
       tag: rawData.tag,

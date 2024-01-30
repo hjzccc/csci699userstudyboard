@@ -27,13 +27,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   console.log("request go in");
   let rawData: ReadabilityFormData = await request.json();
-  let len = await kv.hlen(sampleListName);
-  console.log("len", len);
-  const id = uuidv4();
-  console.log(id);
   const res = await kv.hset<ReadabilitySample>(sampleListName, {
     [rawData.tag]: {
-      id: id,
+      id: rawData.tag,
       sample1: rawData.sample1,
       sample2: rawData.sample2,
       source: rawData.source,
