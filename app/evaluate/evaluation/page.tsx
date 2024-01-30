@@ -125,18 +125,20 @@ export default function EvaluationPage() {
     <>
       <div className="relative flex justify-start w-full h-screen">
         <div className="w-24 bg-slate-800 flex flex-none flex-col">
-          {evaluationSet.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                setCurrentIndex((preIndex) => index);
-                setTabName("Functionality");
-              }}
-              className="w-full min-h-[96px] flex justify-center items-center text-white hover:bg-slate-700 border-b border-slate-700"
-            >
-              {index}
-            </button>
-          ))}
+          <div className=" overflow-auto question-sidebar">
+            {evaluationSet.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setCurrentIndex((preIndex) => index);
+                  setTabName("Functionality");
+                }}
+                className="w-full min-h-[96px] flex justify-center items-center text-white hover:bg-slate-700 border-b border-slate-700"
+              >
+                {index}
+              </button>
+            ))}
+          </div>
           <Button
             type="primary"
             className=" text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-xl text-sm  text-center m-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
