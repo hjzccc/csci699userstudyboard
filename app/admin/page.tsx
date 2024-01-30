@@ -417,15 +417,10 @@ function Page() {
             key: "3",
             children: <FunctionalitySampleForm></FunctionalitySampleForm>,
           },
-          {
-            label: "Samples",
-            key: "2",
-            children: <Samples></Samples>,
-          },
 
           {
             label: "Participants",
-            key: "4",
+            key: "3",
             children: <Participants></Participants>,
           },
         ]}

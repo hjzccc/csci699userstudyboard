@@ -141,15 +141,15 @@ export default function EvaluationPage() {
             type="primary"
             className=" text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-xl text-sm  text-center m-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
             onClick={async () => {
-              // try {
-              //   const response = await fetch("/api/results", {
-              //     method: "POST",
-              //     body: JSON.stringify(evaluationResults),
-              //   });
-              //   if (response.ok) {
-              //     router.replace("/thanks");
-              //   }
-              // } catch {}
+              try {
+                const response = await fetch("/api/results", {
+                  method: "POST",
+                  body: JSON.stringify(evaluationResults),
+                });
+                if (response.ok) {
+                  router.replace("/thanks");
+                }
+              } catch {}
               console.log(evaluationResults);
             }}
             disabled={getCurrentProgress() != getTotalProgress()}
