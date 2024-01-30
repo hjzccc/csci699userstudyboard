@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
   const id = uuidv4();
   console.log(id);
   const res = await kv.hset<ReadabilitySample>(sampleListName, {
-    [id]: {
+    [rawData.tag]: {
       id: id,
       sample1: rawData.sample1,
       sample2: rawData.sample2,

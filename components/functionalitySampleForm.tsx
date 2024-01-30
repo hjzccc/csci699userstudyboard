@@ -11,6 +11,7 @@ export type FunctionalityFormData = {
     answer: number;
   }[];
   tag: string;
+  tag1: string;
 };
 function FunctionalitySampleForm() {
   const [form] = Form.useForm<FunctionalityFormData>();
@@ -135,6 +136,13 @@ function FunctionalitySampleForm() {
           rules={[{ required: true, message: "Please input your tag" }]}
         >
           <TextArea placeholder="Give a tag to cluster the problem of the same type" />
+        </Form.Item>
+        <Form.Item
+          label="tag1"
+          name={"tag1"}
+          rules={[{ required: true, message: "Please input your tag" }]}
+        >
+          <TextArea placeholder="Give a symbol to cluster the problem of the same tag" />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">

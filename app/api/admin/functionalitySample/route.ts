@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
   const id = uuidv4();
   console.log(id);
   const res = await kv.hset<MultipleChoiceQuestion>(sampleListName, {
-    [id]: {
+    [`${rawData.tag}:${rawData.tag1}`]: {
       id: id,
       codeText: rawData.codeText,
       questions: rawData.questions,
