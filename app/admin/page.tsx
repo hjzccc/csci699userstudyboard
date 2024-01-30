@@ -12,6 +12,7 @@ import loadable from "@loadable/component";
 import { useRouter } from "next/navigation";
 import ReadabilitySampleForm from "@/components/readabilitySampleForm";
 import FunctionalitySampleForm from "@/components/functionalitySampleForm";
+import { v4 as uuidv4 } from "uuid";
 const ReactJson = loadable(() => import("react-json-view"));
 export type SingletonSample = {
   readabilityEval: {
@@ -363,36 +364,69 @@ const Results = () => {
 };
 const Participants = () => {
   const [newParticipantId, setNewParticipantId] = useState("-1");
-  const { data, isLoading, error } = useSWR("/api/admin/participants", (url) =>
-    fetch(url).then((data) => data.json())
+  const [delParticipantId, setDelParticipantId] = useState("-1");
+  const { data, isLoading, error, mutate } = useSWR(
+    "/api/admin/participants",
+    (url) => fetch(url).then((data) => data.json())
   );
   if (isLoading || error) return <div>loading...</div>;
   return (
     <div>
       <Toaster />
-      <Input
-        type="number"
-        className="w-fit"
-        onChange={(e) => {
-          setNewParticipantId(e.target.value);
-        }}
-      ></Input>
+      <p className="m-2">
+        Total Participants:{" "}
+        {data?.participants?.length || "No participants yet"}
+      </p>
+      <p className="m-2">New Participant Id:{newParticipantId}</p>
+
       <Button
+        className="block m-2"
         type="primary"
         onClick={async () => {
           try {
+            const uuid = uuidv4();
             const response = await fetch(`/api/admin/participants`, {
               method: "POST",
-              body: JSON.stringify({ id: newParticipantId }),
+              body: JSON.stringify({ id: uuid }),
             });
             if (!response.ok) throw new Error("Failed to add participant");
             toast.success("Added participant");
+            setNewParticipantId(uuid);
+            mutate();
           } catch (err: any) {
             toast.error(err.message);
           }
         }}
       >
         Add
+      </Button>
+      <Input
+        className="block m-2 w-64"
+        onChange={(e) => {
+          setDelParticipantId(e.target.value);
+        }}
+        placeholder="Del Participant Id"
+      ></Input>
+      <Button
+        className="m-2"
+        type="primary"
+        onClick={async () => {
+          try {
+            const response = await fetch(
+              `/api/admin/participants/${delParticipantId}`,
+              {
+                method: "DELETE",
+              }
+            );
+            if (!response.ok) throw new Error("Failed to delete participant");
+            toast.success(`Deleted participant ${delParticipantId}`);
+            mutate();
+          } catch (err: any) {
+            toast.error(err.message);
+          }
+        }}
+      >
+        Delete
       </Button>
       <div>
         <ReactJson src={data} theme={"monokai"}></ReactJson>
@@ -414,7 +448,7 @@ function Page() {
           },
           {
             label: "FunctionalitySamples",
-            key: "3",
+            key: "2",
             children: <FunctionalitySampleForm></FunctionalitySampleForm>,
           },
 
