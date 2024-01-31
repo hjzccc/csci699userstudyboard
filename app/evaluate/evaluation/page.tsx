@@ -245,7 +245,7 @@ export default function EvaluationPage() {
               }}
             >
               {getCurrentFunctionalityResult() ? <LockOutlined /> : ""}
-              Readability
+              Similarity
             </button>
           </div>
         </div>

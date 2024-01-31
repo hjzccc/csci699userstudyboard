@@ -3,14 +3,14 @@ import React from "react";
 
 function Page() {
   const insturctions = `
-  Thank you for taking this user study! 
-
-  There are a total of 3 question sets in this study, and each will have questions evaluating three aspects of the code.
-  Three Objectives:
-  1.Assess the readability of the decompiled code
-  2.Whether the process preserves the functionality of the code 
-  3.Obtain human judgment on the model generated summary
-
+  Thank you for taking this study!!
+  We are interested in how you evaluate our decompiling approaches.
+  Please read the following instructions carefully.
+  You will be presented with 10 test sets.
+  For each test set, you will be asked to evaluate the approaches based on two criteria: functionality and similarity.
+  For functionality, you will be asked to answer 3 questions for two different code samples, make sure you will answer the questions solely based on the current given code.
+  For similarity, you will be given the two different code versions and asked to choose which one is more similar to the original code sample.
+  Before you finish the functionality evaluation, you will not be able to see the similarity evaluation.
   `;
   return (
     <main className="min-h-screen p-24 flex-col flex justify-center items-center">

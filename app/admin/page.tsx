@@ -429,7 +429,7 @@ const Participants = () => {
         Delete
       </Button>
       <div>
-        <ReactJson src={data} theme={"monokai"}></ReactJson>
+        <ReactJson collapsed src={data} theme={"monokai"}></ReactJson>
       </div>
     </div>
   );

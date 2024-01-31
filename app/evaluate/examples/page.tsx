@@ -251,7 +251,7 @@ export default function CodeSamplePage() {
               ) : (
                 ""
               )}
-              Readability
+              Similarity
             </button>
           </div>
         </div>

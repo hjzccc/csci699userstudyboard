@@ -36,20 +36,15 @@ function ReadabilityEval({
   console.log(currentSample);
   const steps: TourProps["steps"] = [
     {
-      title: "Readability Rank",
+      title: "Similarity Rank",
       description:
         "You will evaluate the code readability by comparing the similarity between different code samples and the source code",
       target: () => pageAreaRef.current,
     },
     {
-      title: "Switch between code samples",
-      description: "There will be multiple samples to compare",
-      target: () => pageRef.current,
-    },
-    {
-      title: "Rank the readability",
+      title: " Compare the Similarity",
       description:
-        "Rank the readability of the code samples, from higer, equal to, or lower",
+        "You will be asked to compare the similarity between the code samples and the source code, and choose which one is more similar or the two are equal",
       target: () => rankAreaRef.current,
     },
   ];
